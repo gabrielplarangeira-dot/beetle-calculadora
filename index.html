@@ -1,0 +1,368 @@
+<div id="beetle-budget-calculator">
+<style>
+#beetle-budget-calculator{--green:#D7FF70;--green2:#F0FFD1;--navy:#201C4C;--orange:#FF6B2B;--muted:#85858F;--border:#E7E7DF;font-family:Inter,Arial,sans-serif;color:var(--navy)}
+#beetle-budget-calculator *{box-sizing:border-box}
+#beetle-budget-calculator .shell{max-width:1180px;margin:auto}
+#beetle-budget-calculator .card{background:#fff;border:1px solid var(--border);border-radius:24px;padding:20px;box-shadow:0 14px 34px rgba(32,28,76,.06)}
+#beetle-budget-calculator .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+#beetle-budget-calculator .label{display:block;margin:0 0 7px 3px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#beetle-budget-calculator .input{width:100%;min-height:50px;padding:0 14px;border:1px solid var(--border);border-radius:15px;background:#fff;color:var(--navy);font-size:16px;outline:none}
+#beetle-budget-calculator .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+#beetle-budget-calculator .control{min-height:56px;padding:0 14px;border:1px solid var(--border);border-radius:16px;background:#FAFAF5;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#beetle-budget-calculator .control strong{font-size:11px}
+#beetle-budget-calculator .toggle{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:9px;font-weight:800}
+#beetle-budget-calculator .toggle input{position:absolute;opacity:0}
+#beetle-budget-calculator .switch{width:44px;height:25px;border-radius:99px;background:#D8D8D3;position:relative}
+#beetle-budget-calculator .switch:after{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.16);transition:.2s}
+#beetle-budget-calculator .toggle input:checked+.switch{background:var(--green)}
+#beetle-budget-calculator .toggle input:checked+.switch:after{transform:translateX(19px)}
+#beetle-budget-calculator .tier{margin-top:14px;padding:13px 15px;border-radius:16px;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:16px}
+#beetle-budget-calculator .tier strong{display:block;color:var(--green);font-size:10px}.tier span{display:block;margin-top:4px;font-size:9px;opacity:.75}.tier-value{font-size:12px;font-weight:900;color:var(--green);white-space:nowrap}
+#beetle-budget-calculator .calendar-card{margin-top:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.title{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.range{font-size:10px;color:var(--muted)}
+#beetle-budget-calculator .months{display:grid;gap:12px}.months.single{grid-template-columns:1fr}.months.multi{grid-template-columns:repeat(2,1fr)}
+#beetle-budget-calculator .month{border:1px solid var(--border);border-radius:18px;padding:14px;background:#FCFCF8}.months.single .month{padding:20px 24px}
+#beetle-budget-calculator .month-title{text-align:center;margin-bottom:10px;font-size:12px;font-weight:900;text-transform:capitalize}.months.single .month-title{font-size:16px;margin-bottom:14px}
+#beetle-budget-calculator .week,#beetle-budget-calculator .days{display:grid;grid-template-columns:repeat(7,1fr)}
+#beetle-budget-calculator .weekday{text-align:center;padding:5px;font-size:8px;font-weight:900;color:var(--muted)}.months.single .weekday{padding:7px;font-size:9px}
+#beetle-budget-calculator .day{min-height:30px;position:relative;display:flex;align-items:center;justify-content:center;font-size:9px}.months.single .day{min-height:44px;font-size:12px}.day.weekend{color:var(--orange)}.day.holiday span{outline:2px solid var(--orange);outline-offset:2px}
+#beetle-budget-calculator .day.selected:before{content:"";position:absolute;left:0;right:0;top:50%;height:5px;transform:translateY(-50%);background:var(--green);z-index:0}.months.single .day.selected:before{height:7px}
+#beetle-budget-calculator .day.start:before{left:50%;border-radius:10px 0 0 10px}.day.end:before{right:50%;border-radius:0 10px 10px 0}.day.week-start:before{left:50%}.day.week-end:before{right:50%}.day span{position:relative;z-index:1}.day.selected span{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:var(--green);font-weight:900}.months.single .day.selected span{width:32px;height:32px}
+#beetle-budget-calculator .summary{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;background:#fff;border:1px solid var(--border);border-radius:18px;overflow:hidden}
+#beetle-budget-calculator .summary-item{min-height:74px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative}.summary-item:not(:last-child):after{content:"";position:absolute;right:0;top:14px;bottom:14px;width:1px;background:var(--border)}
+#beetle-budget-calculator .summary-label{font-size:8px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.summary-sub{margin-top:4px;font-size:9px;color:var(--muted)}.summary-number{font-size:27px;font-weight:900}.summary-number.orange{color:var(--orange)}
+#beetle-budget-calculator .total{margin-top:10px;padding:17px 20px;border-radius:19px;background:linear-gradient(90deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:space-between}.total-label{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.total-value{margin-top:3px;font-size:32px;font-weight:900}.total-note{margin-top:5px;font-size:9px;color:#59652C}.error{display:none;margin-top:10px;color:var(--orange);font-size:10px;font-weight:800}
+@media(max-width:760px){#beetle-budget-calculator .controls{grid-template-columns:1fr}#beetle-budget-calculator .months.multi{grid-template-columns:1fr}#beetle-budget-calculator .summary{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){#beetle-budget-calculator .grid{grid-template-columns:1fr}#beetle-budget-calculator .tier{align-items:flex-start;flex-direction:column}}
+
+
+#beetle-budget-calculator .custom-price-box{
+  margin-top:12px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:#FAFAF5;
+  overflow:hidden;
+}
+#beetle-budget-calculator .custom-price-head{
+  min-height:58px;
+  padding:11px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+#beetle-budget-calculator .custom-price-head strong{
+  display:block;
+  font-size:11px;
+  color:var(--navy);
+}
+#beetle-budget-calculator .custom-price-head>div>span{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  color:var(--muted);
+}
+#beetle-budget-calculator .custom-price-fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
+  padding:0 14px;
+  border-top:1px solid transparent;
+  transition:max-height .25s ease,opacity .2s ease,padding .25s ease,border-color .25s ease;
+}
+#beetle-budget-calculator .custom-price-fields.active{
+  max-height:180px;
+  opacity:1;
+  padding:14px;
+  border-top-color:var(--border);
+}
+#beetle-budget-calculator .custom-price-fields .input:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  background:#F1F1EC;
+}
+#beetle-budget-calculator .price-input{
+  min-height:44px;
+  font-size:14px;
+}
+@media(max-width:560px){
+  #beetle-budget-calculator .custom-price-fields{
+    grid-template-columns:1fr;
+  }
+}
+
+
+#beetle-budget-calculator .calendar-helper{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:9px;color:var(--muted)}
+#beetle-budget-calculator .calendar-helper-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:0 0 auto}
+#beetle-budget-calculator .day.selectable{cursor:pointer}
+#beetle-budget-calculator .day.selectable:hover span{box-shadow:0 0 0 3px rgba(215,255,112,.28)}
+#beetle-budget-calculator .day.excluded:before{background:#d7d7d2!important}
+#beetle-budget-calculator .day.excluded span{position:relative;background:#fff!important;color:var(--orange)!important;outline:2px solid var(--orange)!important;outline-offset:0!important;text-decoration:line-through}
+#beetle-budget-calculator .day.excluded span:after{content:"×";position:absolute;right:-7px;top:-8px;width:13px;height:13px;display:grid;place-items:center;border-radius:50%;background:var(--orange);color:#fff;font-size:9px;line-height:1;text-decoration:none}
+#beetle-budget-calculator .excluded-summary{margin-top:8px;font-size:9px;color:var(--muted)}
+</style>
+
+<div class="shell">
+<section class="card">
+<div class="grid">
+<label><span class="label">Nome</span><input id="name" class="input" type="text" placeholder="Nome do cliente"></label>
+<label><span class="label">Empresa</span><input id="company" class="input" type="text" placeholder="Empresa"></label>
+<label><span class="label">Data inicial</span><input id="start" class="input" type="date"></label>
+<label><span class="label">Data final</span><input id="end" class="input" type="date"></label>
+</div>
+<div class="controls">
+<div class="control"><strong>Final de semana</strong><label class="toggle"><input id="weekend" type="checkbox" checked><span class="switch"></span><span id="weekendText">SIM</span></label></div>
+<div class="control"><strong>Feriados</strong><label class="toggle"><input id="holiday" type="checkbox" checked><span class="switch"></span><span id="holidayText">SIM</span></label></div>
+<div class="control"><strong>Mensal R$ 1.000</strong><label class="toggle"><input id="monthly1000" type="checkbox"><span class="switch"></span><span id="monthlyText">NÃO</span></label></div>
+</div>
+
+
+<div class="custom-price-box">
+  <div class="custom-price-head">
+    <div>
+      <strong>Valores personalizados</strong>
+      <span>Ative para substituir temporariamente a tabela padrão.</span>
+    </div>
+    <label class="toggle">
+      <input id="customPricing" type="checkbox">
+      <span class="switch"></span>
+      <span id="customPricingText">NÃO</span>
+    </label>
+  </div>
+
+  <div id="customPriceFields" class="custom-price-fields" aria-hidden="true">
+    <label>
+      <span class="label">Diária — dia de semana</span>
+      <input id="customWeekdayRate" class="input price-input" type="number" min="0" step="50" value="1500" disabled>
+    </label>
+
+    <label>
+      <span class="label">Diária — final de semana / feriado</span>
+      <input id="customWeekendRate" class="input price-input" type="number" min="0" step="50" value="2000" disabled>
+    </label>
+  </div>
+</div>
+
+
+<div class="tier"><div><strong id="tierTitle">FAIXA ATUAL</strong><span id="tierDescription"></span></div><div id="tierValue" class="tier-value"></div></div>
+<div id="error" class="error"></div>
+</section>
+
+<section class="card calendar-card">
+<div class="head"><div class="title">Período selecionado</div><div id="range" class="range"></div></div>
+<div class="calendar-helper"><span class="calendar-helper-dot"></span><span>Clique nos dias do período para marcar os dias em que você não vai trabalhar.</span></div>
+<div id="months" class="months single"></div>
+<div id="excludedSummary" class="excluded-summary">Nenhum dia removido do cálculo.</div>
+</section>
+
+<section class="summary">
+<div class="summary-item"><div><div class="summary-label">Total de diárias</div><div class="summary-sub">dias cobrados</div></div><div id="totalDays" class="summary-number">0</div></div>
+<div class="summary-item"><div><div class="summary-label">Dias úteis</div><div id="weekdayRate" class="summary-sub">R$ 1.500 / dia</div></div><div id="weekdays" class="summary-number">0</div></div>
+<div class="summary-item"><div><div class="summary-label">Final de semana</div><div id="weekendRate" class="summary-sub">R$ 2.000 / dia</div></div><div id="weekends" class="summary-number orange">0</div></div>
+<div class="summary-item"><div><div class="summary-label">Feriados</div><div id="holidayRate" class="summary-sub">nenhum no período</div></div><div id="holidays" class="summary-number orange">0</div></div>
+</section>
+
+<section class="total"><div><div class="total-label">Valor total</div><div id="totalValue" class="total-value">R$ 0</div><div id="totalNote" class="total-note"></div></div><div style="font-size:26px">→</div></section>
+</div>
+
+<script>
+(() => {
+const root=document.getElementById('beetle-budget-calculator');
+if(!root||root.dataset.ready)return;
+root.dataset.ready='1';
+const $=id=>root.querySelector('#'+id);
+const excludedDates=new Set();
+// Ao abrir a calculadora, usar o dia atual do dispositivo (sem conversão UTC).
+function syncDatesToToday(){
+  const now=new Date();
+  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  $('start').value=today;
+  $('end').value=today;
+  excludedDates.clear();
+}
+syncDatesToToday();
+const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
+const parse=v=>{if(!v)return null;const[y,m,d]=v.split('-').map(Number);return new Date(Date.UTC(y,m-1,d));};
+const fmt=d=>new Intl.DateTimeFormat('pt-BR',{timeZone:'UTC'}).format(d);
+const key=d=>`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+
+function holidays(y){
+return {
+[`${y}-01-01`]:'Confraternização Universal',
+[`${y}-04-21`]:'Tiradentes',
+[`${y}-05-01`]:'Dia do Trabalho',
+[`${y}-09-07`]:'Independência do Brasil',
+[`${y}-10-12`]:'Nossa Senhora Aparecida',
+[`${y}-11-02`]:'Finados',
+[`${y}-11-15`]:'Proclamação da República',
+[`${y}-11-20`]:'Consciência Negra',
+[`${y}-12-25`]:'Natal'
+};}
+
+function monthsBetween(s,e){
+const out=[];let y=s.getUTCFullYear(),m=s.getUTCMonth();
+while(y<e.getUTCFullYear()||(y===e.getUTCFullYear()&&m<=e.getUTCMonth())){
+out.push([y,m]);m++;if(m>11){m=0;y++;}if(out.length>12)break;
+}return out;
+}
+
+function monthHTML(y,m,s,e,hm){
+const first=new Date(Date.UTC(y,m,1));
+const last=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+const names=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+let h=`<div class="month"><div class="month-title">${new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric',timeZone:'UTC'}).format(first)}</div><div class="week">${names.map(n=>`<div class="weekday">${n}</div>`).join('')}</div><div class="days">`;
+for(let i=0;i<first.getUTCDay();i++)h+='<div></div>';
+for(let d=1;d<=last;d++){
+const x=new Date(Date.UTC(y,m,d));
+const selected=x>=s&&x<=e;
+const isWeekend=[0,6].includes(x.getUTCDay());
+const holidayName=hm[key(x)];
+const dateId=key(x);
+const excluded=selected&&excludedDates.has(dateId);
+const c=['day'];
+if(isWeekend)c.push('weekend');
+if(holidayName)c.push('holiday');
+if(selected)c.push('selected','selectable');
+if(excluded)c.push('excluded');
+if(+x===+s)c.push('start');
+if(+x===+e)c.push('end');
+if(selected&&x.getUTCDay()===0)c.push('week-start');
+if(selected&&x.getUTCDay()===6)c.push('week-end');
+h+=`<div class="${c.join(' ')}" data-date="${dateId}" title="${excluded?'Não trabalhar':(holidayName||'Clique para remover do cálculo')}"><span>${d}</span></div>`;
+}
+return h+'</div></div>';
+}
+
+function calculate(){
+const s=parse($('start').value),e=parse($('end').value);
+const workWeekend=$('weekend').checked,workHoliday=$('holiday').checked,use1000=$('monthly1000').checked;
+$('weekendText').textContent=workWeekend?'SIM':'NÃO';
+$('holidayText').textContent=workHoliday?'SIM':'NÃO';
+$('monthlyText').textContent=use1000?'SIM':'NÃO';
+if(!s||!e||e<s){$('error').textContent='Confira as datas selecionadas.';$('error').style.display='block';return;}
+$('error').style.display='none';
+
+let hm={};
+for(let y=s.getUTCFullYear();y<=e.getUTCFullYear();y++)Object.assign(hm,holidays(y));
+
+for(const dateId of [...excludedDates]){
+const d=parse(dateId);
+if(!d||d<s||d>e)excludedDates.delete(dateId);
+}
+
+let wd=0,we=0,hol=0;
+let detectedWE=0,detectedHOL=0;
+for(let t=+s;t<=+e;t+=86400000){
+const d=new Date(t),dateId=key(d);
+const isHoliday=Boolean(hm[dateId]),isWeekend=[0,6].includes(d.getUTCDay());
+if(isHoliday)detectedHOL++;else if(isWeekend)detectedWE++;
+if(excludedDates.has(dateId))continue;
+if(isHoliday)hol++;
+else if(isWeekend)we++;
+else wd++;
+}
+
+const chargedWE=workWeekend?we:0;
+const chargedHOL=workHoliday?hol:0;
+const totalDays=wd+chargedWE+chargedHOL;
+
+const customPricing=$('customPricing').checked;
+$('customPricingText').textContent=customPricing?'SIM':'NÃO';
+
+const customFields=$('customPriceFields');
+customFields.classList.toggle('active',customPricing);
+customFields.setAttribute('aria-hidden',customPricing?'false':'true');
+$('customWeekdayRate').disabled=!customPricing;
+$('customWeekendRate').disabled=!customPricing;
+
+const standardRate=1500;
+const weekendBaseRate=2000;
+const midRate=1200;
+const monthlyBaseRate=1200;
+const monthlySpecialRate=1000;
+
+let weekdayRate=standardRate,weekendRate=weekendBaseRate,holidayRate=weekendBaseRate,title,description,note;
+
+if(customPricing){
+  const customWeekday=Math.max(0,Number($('customWeekdayRate').value)||0);
+  const customWeekend=Math.max(0,Number($('customWeekendRate').value)||0);
+
+  weekdayRate=customWeekday;
+  weekendRate=customWeekend;
+  holidayRate=customWeekend;
+
+  title='VALORES PERSONALIZADOS';
+  description=`Dias úteis a ${money(customWeekday)}; finais de semana e feriados a ${money(customWeekend)}.`;
+  note='Valores personalizados aplicados. A tabela automática está temporariamente desativada.';
+}else if(totalDays>=30){
+const monthlyRate=use1000?monthlySpecialRate:monthlyBaseRate;
+weekdayRate=monthlyRate;
+weekendRate=monthlyRate;
+holidayRate=monthlyRate;
+title=use1000?'MENSAL ESPECIAL':'PERÍODO MENSAL';
+description=`30 diárias ou mais: todas as diárias a ${money(monthlyRate)}.`;
+note=use1000?`Tarifa mensal especial de ${money(monthlySpecialRate)} aplicada.`:`Tarifa mensal padrão de ${money(monthlyBaseRate)} aplicada.`;
+}else if(totalDays>=16){
+weekdayRate=midRate;
+weekendRate=weekendBaseRate;
+holidayRate=weekendBaseRate;
+title='FAIXA DE 16 A 29 DIÁRIAS';
+description=`Dias úteis a ${money(midRate)}; finais de semana e feriados a ${money(weekendBaseRate)}.`;
+note='Faixa intermediária aplicada automaticamente.';
+}else{
+weekdayRate=standardRate;
+weekendRate=weekendBaseRate;
+holidayRate=weekendBaseRate;
+title='FAIXA ATÉ 15 DIÁRIAS';
+description=`Dias úteis a ${money(standardRate)}; finais de semana e feriados a ${money(weekendBaseRate)}.`;
+note='Tabela padrão aplicada.';
+}
+
+const total=(wd*weekdayRate)+(chargedWE*weekendRate)+(chargedHOL*holidayRate);
+
+$('totalDays').textContent=totalDays;
+$('weekdays').textContent=wd;
+$('weekends').textContent=chargedWE;
+$('holidays').textContent=chargedHOL;
+$('weekdayRate').textContent=`${money(weekdayRate)} / dia`;
+$('weekendRate').textContent=workWeekend?`${money(weekendRate)} / dia`:`${detectedWE} detectado(s) · não trabalhado`;
+$('holidayRate').textContent=detectedHOL?(workHoliday?`${money(holidayRate)} / dia`:`${detectedHOL} detectado(s) · não trabalhado`):'nenhum no período';
+$('totalValue').textContent=money(total);
+$('totalNote').textContent=note;
+$('tierTitle').textContent=title;
+$('tierDescription').textContent=description;
+$('tierValue').textContent=`${totalDays} diárias`;
+$('range').textContent=`${fmt(s)} — ${fmt(e)}`;
+
+const months=monthsBetween(s,e);
+$('months').className='months '+(months.length===1?'single':'multi');
+$('months').innerHTML=months.map(([y,m])=>monthHTML(y,m,s,e,hm)).join('');
+
+$('excludedSummary').textContent=excludedDates.size
+?`${excludedDates.size} dia(s) removido(s) do cálculo.`
+:'Nenhum dia removido do cálculo.';
+
+$('months').querySelectorAll('.day.selectable').forEach(day=>{
+day.addEventListener('click',()=>{
+const dateId=day.dataset.date;
+if(excludedDates.has(dateId))excludedDates.delete(dateId);
+else excludedDates.add(dateId);
+calculate();
+});
+});
+}
+
+['name','company','start','end'].forEach(id=>$(id).addEventListener('input',calculate));
+$('weekend').addEventListener('change',calculate);
+$('holiday').addEventListener('change',calculate);
+$('monthly1000').addEventListener('change',calculate);
+$('customPricing').addEventListener('change',calculate);
+$('customWeekdayRate').addEventListener('input',calculate);
+$('customWeekendRate').addEventListener('input',calculate);
+window.addEventListener('pageshow',event=>{if(event.persisted){syncDatesToToday();calculate();}});
+calculate();
+})();
+</script>
+</div>
